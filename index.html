@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>블루 플래닛: Eco Challenger</title>
+    <style>
+        :root {
+            --primary: #0077b6;
+            --primary-light: #90e0ef;
+            --accent: #2ec4b6;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2b2d42;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0077b6, #2ec4b6);
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 통계 섹션 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .stat-item {
+            background: #f1f9ff;
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin-top: 2px;
+        }
+
+        /* 검색 기능 */
+        .search-box {
+            display: flex;
+            gap: 8px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #005f93;
+        }
+
+        .search-result {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+
+        /* 챌린지 체크리스트 */
+        .challenge-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .challenge-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .challenge-item label {
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 14px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8d99ae;
+            background: #f1f3f5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>🌍 Blue Planet</h1>
+        <p>SDGs 12번: 책임 있는 소비와 자원순환 실천</p>
+    </header>
+
+    <div class="content">
+        <!-- 나의 실천 현황 -->
+        <div class="card">
+            <div class="card-title">📊 블루 플래닛 대시보드</div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="pointCount">0</div>
+                    <div class="stat-label">누적 에코 포인트</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="co2Count">0.0 kg</div>
+                    <div class="stat-label">탄소 감축량</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 분리배출 검색기 -->
+        <div class="card">
+            <div class="card-title">🔍 올바른 분리배출 검색기</div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="예: 페트병, 택배상자, 칫솔">
+                <button onclick="searchWaste()">검색</button>
+            </div>
+            <div class="search-result" id="searchResult"></div>
+        </div>
+
+        <!-- 오늘의 챌린지 -->
+        <div class="card">
+            <div class="card-title">✅ 오늘의 지구수호 챌린지</div>
+            <ul class="challenge-list">
+                <li class="challenge-item">
+                    <label>
+                        <input type="checkbox" onchange="toggleChallenge(this, 10, 0.2)">
+                        텀블러/다회용 컵 사용하기
+                    </label>
+                    <span>+10p</span>
+                </li>
+                <li class="challenge-item">
+                    <label>
+                        <input type="checkbox" onchange="toggleChallenge(this, 15, 0.3)">
+                        페트병 라벨 제거 후 분리배출
+                    </label>
+                    <span>+15p</span>
+                </li>
+                <li class="challenge-item">
+                    <label>
+                        <input type="checkbox" onchange="toggleChallenge(this, 20, 0.5)">
+                        급식/식사 잔반 남기지 않기
+                    </label>
+                    <span>+20p</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        🔒 본 앱은 개인정보를 서버에 저장하지 않고 브라우저에 안전하게 보관합니다.
+    </footer>
+</div>
+
+<script>
+    // 분리배출 데이터베이스
+    const wasteDb = {
+        "페트병": "내용물을 비우고 라벨을 떼어낸 뒤 찌그러뜨려 투명 페트병 전용함에 배출하세요.",
+        "플라스틱": "음식물 등 이물질을 깨끗이 씻어서 플라스틱류로 배출하세요.",
+        "택배상자": "운송장 테이프와 비닐 테이프를 완전히 제거한 후 펼쳐서 종이류로 배출하세요.",
+        "칫솔": "복합 소재로 재활용이 불가능하므로 종량제 봉투(일반쓰레기)에 버려주세요.",
+        "종이팩": "우유팩 등은 일반 종이와 달리 물에 씻어 말린 후 종이팩 전용 수거함에 버려야 합니다.",
+        "비닐": "이물질이 묻지 않은 깨끗한 비닐만 모아서 비닐류로 배출하세요."
+    };
+
+    let points = 0;
+    let co2Saved = 0.0;
+
+    // 분리배출 검색 함수
+    function searchWaste() {
+        const query = document.getElementById("searchInput").value.trim();
+        const resultDiv = document.getElementById("searchResult");
+        
+        if (!query) {
+            resultDiv.style.display = "block";
+            resultDiv.innerText = "검색어를 입력해 주세요.";
+            return;
+        }
+
+        let found = false;
+        for (let key in wasteDb) {
+            if (query.includes(key) || key.includes(query)) {
+                resultDiv.style.display = "block";
+                resultDiv.innerHTML = `<strong>[${key}]</strong>: ${wasteDb[key]}`;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            resultDiv.style.display = "block";
+            resultDiv.innerText = `'${query}'에 대한 정보가 없습니다. 이물질을 제거한 뒤 재질(플라스틱/종이/일반)에 맞게 배출해 보세요!`;
+        }
+    }
+
+    // 챌린지 체크 시 포인트/탄소 감축 계산
+    function toggleChallenge(checkbox, p, co2) {
+        if (checkbox.checked) {
+            points += p;
+            co2Saved += co2;
+        } else {
+            points -= p;
+            co2Saved -= co2;
+        }
+        document.getElementById("pointCount").innerText = points;
+        document.getElementById("co2Count").innerText = co2Saved.toFixed(1) + " kg";
+    }
+</script>
+
+</body>
+</html>
